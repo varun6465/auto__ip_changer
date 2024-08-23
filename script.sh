@@ -1,13 +1,27 @@
 #!/bin/bash
+
+# Display the initial IP address with a light green color
 echo "127.0.0.1:9050"
 lightgreen='\e[1;32m'
-echo -e "$lightgreen" ""
+echo -e "${lightgreen}Initial IP:"
+
+# Loop to restart Tor and check IP address continuously
 while true; do
-sudo service tor restart  
-#it automatically restarts the tor service in the tetminal
-sleep 1
-#the above sleep period is the time to get the new ip addr i would recommend 15 for using dark net
-date +%T
-#here is the actuall code goes down below
-curl --socks5 127.0.0.1:9050 https://check.torproject.org |& grep -Po "(?<=strong>)[\d\.]+(?=</strong)"|sed 's/^/IP Changed with────────────────────█──<><><>───[ /g'|sed 's/$/ ]/g'
+    # Restart the Tor service
+    sudo service tor restart
+    
+    # Wait for a short period to allow Tor to restart
+    sleep 15 # Adjust sleep duration as needed
+
+    # Display the current time
+    date +%T
+
+    # Check the current IP address using Tor and format the output
+    curl --socks5 127.0.0.1:9050 https://check.torproject.org 2>/dev/null | \
+    grep -Po "(?<=strong>)[\d\.]+(?=</strong)" | \
+    sed 's/^/IP Changed with────────────────────█──<><><>───[ /g' | \
+    sed 's/$/ ]/g'
+
+    # Optional: Sleep for a bit before restarting the Tor service again
+    sleep 10 # Adjust sleep duration as needed
 done
